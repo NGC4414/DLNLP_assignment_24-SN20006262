@@ -3,15 +3,16 @@ from A.data_preprocessing_A import preprocess_text_NB, split_multinomialNB
 import numpy as np
 import random
 import torch
-from transformers import RobertaConfig, AutoTokenizer, AutoModelForSequenceClassification, get_linear_schedule_with_warmup
+from transformers import RobertaConfig, AutoModelForSequenceClassification, get_linear_schedule_with_warmup
 from transformers import AdamW, BertConfig
 from torch.utils.data import TensorDataset
-from transformers import AutoModelForSequenceClassification, AutoConfig, AutoTokenizer
+from transformers import AutoModelForSequenceClassification, AutoConfig
 from sklearn.metrics import classification_report
 from ignite.metrics import Precision, Recall
 
 import time
 import datetime
+from tqdm.auto import tqdm
 
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
@@ -166,14 +167,8 @@ def predict_with_multinomialNB(books_file_path):
 
 
 def format_time(elapsed):
-    '''
-    Takes a time in seconds and returns a string hh:mm:ss
-    '''
-    # Round to the nearest second.
-    elapsed_rounded = int(round((elapsed)))
-    
-    # Format as hh:mm:ss
-    return str(datetime.timedelta(seconds=elapsed_rounded))
+    elapsed_rounded = int(round((elapsed)))    # Round to the nearest second
+    return str(datetime.timedelta(seconds=elapsed_rounded)) # Format as hh:mm:ss
 
 
 # Function to calculate the accuracy of our predictions vs labels
@@ -184,9 +179,7 @@ def flat_accuracy(preds, labels):
 
 
 def train_model2(train_dataloader, validation_dataloader, num_labels, model_path, epochs=3, learning_rate=2e-5, epsilon=1e-8):
-
-    # Initializing a RoBERTa configuration
-    configuration = RobertaConfig()
+    configuration = RobertaConfig() # Initializing a RoBERTa configuration
     configuration.num_labels = num_labels
 
     # tokenizer = AutoTokenizer.from_pretrained("roberta-base", max_length = 512)
@@ -323,12 +316,9 @@ def train_model2(train_dataloader, validation_dataloader, num_labels, model_path
 
             total_eval_accuracy += flat_accuracy(logits, label_ids)
 
-
-
         # Report the final accuracy for this validation run.
         avg_val_accuracy = total_eval_accuracy / len(validation_dataloader)
         print("  Accuracy: {0:.2f}".format(avg_val_accuracy))
-
 
         # Calculate the average loss over all of the batches.
         avg_val_loss = total_eval_loss / len(validation_dataloader)
@@ -360,42 +350,178 @@ def train_model2(train_dataloader, validation_dataloader, num_labels, model_path
     return training_stats
 
 
-
 def train_model(train_dataloader, validation_dataloader, num_labels, model_name, model_path, epochs=3, learning_rate=2e-5, epsilon=1e-8):
-
     # Load model configuration, model, and tokenizer dynamically based on model_name
     config = AutoConfig.from_pretrained(model_name, num_labels=num_labels)
     model = AutoModelForSequenceClassification.from_pretrained(model_name, config=config)
     #tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    # Move model to specified device
-    model.to(device)
+    model.to(device) # Move model to specified device
 
-    # Initialize optimizer
-    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, eps=epsilon)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, eps=epsilon) # Initialize optimizer
     total_steps = len(train_dataloader) * epochs
 
     # Create the learning rate scheduler
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
 
-    # Set the seed value all over the place to make this reproducible.
-    seed_val = 42
+    seed_val = 42 # Set the seed value all over the place to make this reproducible.
 
     random.seed(seed_val)
     np.random.seed(seed_val)
     torch.manual_seed(seed_val)
     torch.cuda.manual_seed_all(seed_val)
 
-    # Initialize training statistics
-    training_stats = []
+    training_stats = []  # Initialize training statistics
 
-    # Measure total training time
-    total_t0 = time.time()
+    total_t0 = time.time() # Measure total training time
+  
+    accumulation_steps = 4  # Define the number of accumulation steps
+
+    for epoch_i in range(epochs):
+        print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
+        print('Training...')
+
+        t0 = time.time()  # Measure how long the training epoch takes
+        total_train_loss = 0  # Reset the total loss for this epoch
+        model.train()  # Put the model into training mode
+        progress_bar = tqdm(train_dataloader, desc="Training", leave=False)
+
+        # Initialize the gradient accumulation variable
+        model.zero_grad()
+
+        for step, batch in enumerate(train_dataloader):
+            b_input_ids = batch[0].to(device)
+            b_input_mask = batch[1].to(device)
+            b_labels = batch[2].to(device)
+
+            # Perform a forward pass (evaluate the model on this training batch)
+            res = model(b_input_ids, token_type_ids=None, attention_mask=b_input_mask, labels=b_labels)
+            loss = res['loss'] / accumulation_steps  # Normalize the loss by the number of accumulation steps
+
+            loss.backward() # Perform a backward pass to calculate the gradients
+
+            # Perform optimization step and scheduler step every accumulation_steps or on the last step
+            if (step + 1) % accumulation_steps == 0 or (step + 1 == len(train_dataloader)):
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)  # Clip the norm of the gradients to 1.0 to prevent exploding gradients
+                optimizer.step()  # Update model parameters
+                scheduler.step()  # Update learning rate schedule
+                model.zero_grad()  # Clear the gradients
+
+            progress_bar.set_postfix({'loss': loss.item()})
+                
+            total_train_loss += loss.item() * accumulation_steps  # Scale the loss back up
+
+            # Clean up GPU memory every 100 steps
+            if step % 100 == 0:
+                torch.cuda.empty_cache()
+
+        # Calculate the average loss over the training data
+        avg_train_loss = total_train_loss / len(train_dataloader)
+        progress_bar.close()
+        training_time = format_time(time.time() - t0)  # Measure how long this epoch took
+
+        print("\n  Average training loss: {0:.2f}".format(avg_train_loss))
+        print("  Training epoch took: {:}".format(training_time))           
+
+        print("")  # Validation
+        print("Running Validation...")
+
+        t0 = time.time()
+
+        model.eval() # Put the model in evaluation mode--the dropout layers behave differently
+                     # during evaluation.
+
+        # Tracking variables 
+        total_eval_accuracy = 0
+        total_eval_loss = 0
+        nb_eval_steps = 0
+
+        # Evaluate data for one epoch
+        for batch in validation_dataloader:
+            b_input_ids = batch[0].to(device)
+            b_input_mask = batch[1].to(device)
+            b_labels = batch[2].to(device)
+
+            with torch.no_grad():        
+                res = model(b_input_ids, 
+                                       token_type_ids=None, 
+                                       attention_mask=b_input_mask,
+                                       labels=b_labels)
+            loss = res['loss']
+            logits = res['logits']
+
+            # Accumulate the validation loss.
+            total_eval_loss += loss.item()
+
+            logits = logits.detach().cpu().numpy()
+            label_ids = b_labels.to('cpu').numpy()
+
+            total_eval_accuracy += flat_accuracy(logits, label_ids)
+
+        # Report the final accuracy for this validation run.
+        avg_val_accuracy = total_eval_accuracy / len(validation_dataloader)
+        print("  Accuracy: {0:.2f}".format(avg_val_accuracy))
+
+        # Calculate the average loss over all of the batches.
+        avg_val_loss = total_eval_loss / len(validation_dataloader)
+
+        # Measure how long the validation run took.
+        validation_time = format_time(time.time() - t0)
+
+        print("  Validation Loss: {0:.2f}".format(avg_val_loss))
+        print("  Validation took: {:}".format(validation_time))
+
+        # Record all statistics from this epoch.
+        training_stats.append(
+            {
+                'epoch': epoch_i + 1,
+                'Training Loss': avg_train_loss,
+                'Valid. Loss': avg_val_loss,
+                'Valid. Accur.': avg_val_accuracy,
+                'Training Time': training_time,
+                'Validation Time': validation_time
+            })
+
+    print("")
+    print("Training complete!")
+    print("Total training took {:} (h:mm:ss)".format(format_time(time.time()-total_t0)))
+    # Save the model weights
+    #model_save_path = 'A/models/roberta.bin'
+
+    torch.save(model.state_dict(), model_path)
+    return training_stats
+
+
+def train_model3(train_dataloader, validation_dataloader, num_labels, model_name, model_path, epochs=3, learning_rate=2e-5, epsilon=1e-8):
+    # Load model configuration, model, and tokenizer dynamically based on model_name
+    config = AutoConfig.from_pretrained(model_name, num_labels=num_labels)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, config=config)
+    #tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    model.to(device) # Move model to specified device
+
+    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, eps=epsilon) # Initialize optimizer
+    total_steps = len(train_dataloader) * epochs
+
+    # Create the learning rate scheduler
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=total_steps)
+
+    seed_val = 42 # Set the seed value all over the place to make this reproducible.
+
+    random.seed(seed_val)
+    np.random.seed(seed_val)
+    torch.manual_seed(seed_val)
+    torch.cuda.manual_seed_all(seed_val)
+
+    training_stats = []  # Initialize training statistics
+
+    total_t0 = time.time() # Measure total training time
+  
+    accumulation_steps = 4  # Define the number of accumulation steps
 
     batch_loss = 0
 
-    # Training loop
-    for epoch_i in range(epochs):
+    for epoch_i in range(epochs): # Training loop
         print("")
         print('======== Epoch {:} / {:} ========'.format(epoch_i + 1, epochs))
         print('Training...')
@@ -410,8 +536,6 @@ def train_model(train_dataloader, validation_dataloader, num_labels, model_name,
         # Training step
         # For each batch of training data...
         for step, batch in enumerate(train_dataloader):
-
-
             b_input_ids = batch[0].to(device)
             b_input_mask = batch[1].to(device)
             b_labels = batch[2].to(device)
@@ -450,16 +574,13 @@ def train_model(train_dataloader, validation_dataloader, num_labels, model_name,
         print("  Average training loss: {0:.2f}".format(avg_train_loss))
         print("  Training epcoh took: {:}".format(training_time))
 
-
-        # Validation
-        print("")
+        print("")  # Validation
         print("Running Validation...")
 
         t0 = time.time()
 
-        # Put the model in evaluation mode--the dropout layers behave differently
-        # during evaluation.
-        model.eval()
+        model.eval() # Put the model in evaluation mode--the dropout layers behave differently
+                     # during evaluation.
 
         # Tracking variables 
         total_eval_accuracy = 0
@@ -468,11 +589,9 @@ def train_model(train_dataloader, validation_dataloader, num_labels, model_name,
 
         # Evaluate data for one epoch
         for batch in validation_dataloader:
-
             b_input_ids = batch[0].to(device)
             b_input_mask = batch[1].to(device)
             b_labels = batch[2].to(device)
-
 
             with torch.no_grad():        
                 res = model(b_input_ids, 
@@ -490,12 +609,9 @@ def train_model(train_dataloader, validation_dataloader, num_labels, model_name,
 
             total_eval_accuracy += flat_accuracy(logits, label_ids)
 
-
-
         # Report the final accuracy for this validation run.
         avg_val_accuracy = total_eval_accuracy / len(validation_dataloader)
         print("  Accuracy: {0:.2f}".format(avg_val_accuracy))
-
 
         # Calculate the average loss over all of the batches.
         avg_val_loss = total_eval_loss / len(validation_dataloader)
@@ -515,8 +631,7 @@ def train_model(train_dataloader, validation_dataloader, num_labels, model_name,
                 'Valid. Accur.': avg_val_accuracy,
                 'Training Time': training_time,
                 'Validation Time': validation_time
-            }
-        )
+            })
 
     print("")
     print("Training complete!")
@@ -526,7 +641,6 @@ def train_model(train_dataloader, validation_dataloader, num_labels, model_name,
 
     torch.save(model.state_dict(), model_path)
     return training_stats
-
 
 
 def plot_training_curves(training_stats):
@@ -591,9 +705,3 @@ def load_model_and_predict(dataloader, device, num_labels, target_names, phase="
     plt.tight_layout()  # Adjust layout to make room for the rotated x-axis labels
     plt.show()
     
-
-
-
-
-
-#training_stats = train_model(train_dataloader, validation_dataloader, num_labels, model_name, model_path, epochs=3, learning_rate=2e-5, epsilon=1e-8)

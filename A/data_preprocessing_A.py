@@ -17,8 +17,6 @@ import warnings
 # Suppress specific FutureWarnings from Seaborn
 warnings.filterwarnings("ignore", category=FutureWarning, module="seaborn")
 
-
-
 # nltk.download('punkt')
 # nltk.download('stopwords')
 
@@ -61,16 +59,7 @@ def split_multinomialNB(data_frame, train_frac=0.8, test_frac=0.1, val_frac=0.1,
 
 
 def preprocess_text_NB(text):
-    """
-    Preprocesses input text by lowercasing, removing punctuation, 
-    tokenizing, removing stopwords, and stemming.
     
-    Parameters:
-    - text (str): The text to preprocess.
-    
-    Returns:
-    - str: The preprocessed text.
-    """
     # Convert text to lowercase
     text = text.lower()
     
@@ -95,70 +84,30 @@ def preprocess_text_NB(text):
 
 
 
-def clean(text):
-    # Convert to lowercase
-    text = text.lower()
+# def clean(text):
+#     # Convert to lowercase
+#     text = text.lower()
     
-    # Remove punctuation
-    text = re.sub(f'[{re.escape(string.punctuation)}]', ' ', text)
+#     # Remove punctuation
+#     text = re.sub(f'[{re.escape(string.punctuation)}]', ' ', text)
     
-    # Tokenize text
-    text_tokens = word_tokenize(text)
+#     # Tokenize text
+#     text_tokens = word_tokenize(text)
     
-    # Remove stopwords and words shorter than 4 characters
-    filtered_tokens = [word for word in text_tokens if word not in Stopwords and len(word) > 3]
+#     # Remove stopwords and words shorter than 4 characters
+#     filtered_tokens = [word for word in text_tokens if word not in Stopwords and len(word) > 3]
     
-    # Rejoin tokens into a string
-    text = ' '.join(filtered_tokens)
+#     # Rejoin tokens into a string
+#     text = ' '.join(filtered_tokens)
     
-    # Remove single characters (this also removes spaces around the single character, so it's combined with the next rule)
-    # Remove HTML tags (though this might be better placed before tokenization if HTML tags are not split correctly)
-    text = re.sub('<.*?>+', ' ', text)
+#     # Remove single characters (this also removes spaces around the single character, so it's combined with the next rule)
+#     # Remove HTML tags (though this might be better placed before tokenization if HTML tags are not split correctly)
+#     text = re.sub('<.*?>+', ' ', text)
     
-    # Remove extra spaces - combined the two rules into one for efficiency
-    text = re.sub(r'\s+[a-zA-Z]\s+|\n|\s+', ' ', text)
+#     # Remove extra spaces - combined the two rules into one for efficiency
+#     text = re.sub(r'\s+[a-zA-Z]\s+|\n|\s+', ' ', text)
     
-    return text
-
-
-# def eda_books(books_file_path, plt_title1 = '', plt_title2 = '', plt_title3 = ''):
-
-#     # Load data
-#     data = pd.read_csv(books_file_path, index_col="index")
-#     print('Number of samples: ', data['genre'].count())
-#     print(data['genre'].value_counts())
-
-#     # Set up the matplotlib figure (1 row, 3 columns)
-#     fig, axs = plt.subplots(1, 3, figsize=(20, 5))
-
-#     # Adjust layout
-#     plt.tight_layout(pad=4.0)
-
-#     # Plotting genre distribution
-#     axs[0].bar(data['genre'].value_counts().index, data['genre'].value_counts().values)
-#     axs[0].set_title(plt_title1)
-#     axs[0].set_xlabel('Genre')
-#     axs[0].set_ylabel('Count')
-#     axs[0].tick_params(axis='x', rotation=30)
-
-#     # Calculate and display histogram for the length of summaries
-#     summary_lengths = data['summary'].str.split().apply(len)
-#     axs[1].hist(summary_lengths, bins=20)
-#     axs[1].set_title(plt_title2)
-#     axs[1].set_xlabel('Length of Summary')
-#     axs[1].set_ylabel('Count')
-
-#     # Calculate average summary length per genre
-#     data['summary_length'] = data['summary'].apply(lambda x: len(x.split()))
-#     average_lengths_per_genre = data.groupby('genre')['summary_length'].mean()
-    
-#     axs[2].bar(average_lengths_per_genre.index, average_lengths_per_genre.values)
-#     axs[2].set_title(plt_title3)
-#     axs[2].set_xlabel('Genre')
-#     axs[2].set_ylabel('Average Length of Summary')
-#     axs[2].tick_params(axis='x', rotation=30)
-
-#     plt.show()
+#     return text
 
 
 def eda_books(books_file_path, plt_title1='', plt_title2='', plt_title3=''):
@@ -200,7 +149,6 @@ def eda_books(books_file_path, plt_title1='', plt_title2='', plt_title3=''):
 
     # Display the plots
     plt.show()
-
 
 
 def proportional_sampling_min(books_file_path, reduced_books_file_path, target_samples=400, minimum_samples=200):
@@ -275,55 +223,55 @@ def preprocess_data(reduced_books_file_path, tokenizer_name="roberta-base", max_
 
 
 
-def preprocess_and_save(books_file_path, preprocessed_books_path):
+# def preprocess_and_save(books_file_path, preprocessed_books_path):
 
-    # Load data
-    data = pd.read_csv(books_file_path, index_col="index")
+#     # Load data
+#     data = pd.read_csv(books_file_path, index_col="index")
     
-    # Preprocess title and summary by cleaning
-    data["title"] = data["title"].apply(clean)
-    data["summary"] = data["summary"].apply(clean)
+#     # Preprocess title and summary by cleaning
+#     data["title"] = data["title"].apply(clean)
+#     data["summary"] = data["summary"].apply(clean)
 
-    # Combine cleaned title and summary for later use
-    data["title_and_summary"] = data["title"] + ". " + data["summary"]
+#     # Combine cleaned title and summary for later use
+#     data["title_and_summary"] = data["title"] + ". " + data["summary"]
     
-    #preprocessed_books_path = "./Datasets/preprocessed_books.csv"
-    data.to_csv(preprocessed_books_path)
+#     #preprocessed_books_path = "./Datasets/preprocessed_books.csv"
+#     data.to_csv(preprocessed_books_path)
     
-    return preprocessed_books_path
+#     return preprocessed_books_path
 
 
 
-def tokenize_dataset(preprocessed_books_path, tokenizer_name="roberta-base", max_length=512):
-    # Load preprocessed data
-    data = pd.read_csv(preprocessed_books_path, index_col="index")
-    num_labels = len(data.genre.unique())
+# def tokenize_dataset(preprocessed_books_path, tokenizer_name="roberta-base", max_length=512):
+#     # Load preprocessed data
+#     data = pd.read_csv(preprocessed_books_path, index_col="index")
+#     num_labels = len(data.genre.unique())
     
-    # Convert genre to ids and get unique genres
-    genre2id = {genre: i for i, genre in enumerate(data.genre.unique())}
-    data["genre_id"] = data.genre.apply(lambda a: genre2id[a])
-    unique_genres = data.genre.unique()  # Save unique genres for target names
+#     # Convert genre to ids and get unique genres
+#     genre2id = {genre: i for i, genre in enumerate(data.genre.unique())}
+#     data["genre_id"] = data.genre.apply(lambda a: genre2id[a])
+#     unique_genres = data.genre.unique()  # Save unique genres for target names
     
-    # Tokenize
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, max_length=max_length)
-    input_ids, attention_masks = [], []
-    for sent in data["title_and_summary"].values:
-        encoded_dict = tokenizer.encode_plus(
-            sent, add_special_tokens=True, max_length=max_length, truncation=True,
-            padding='max_length', return_attention_mask=True, return_tensors='pt',
-        )
-        input_ids.append(encoded_dict['input_ids'])
-        attention_masks.append(encoded_dict['attention_mask'])
+#     # Tokenize
+#     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name, max_length=max_length)
+#     input_ids, attention_masks = [], []
+#     for sent in data["title_and_summary"].values:
+#         encoded_dict = tokenizer.encode_plus(
+#             sent, add_special_tokens=True, max_length=max_length, truncation=True,
+#             padding='max_length', return_attention_mask=True, return_tensors='pt',
+#         )
+#         input_ids.append(encoded_dict['input_ids'])
+#         attention_masks.append(encoded_dict['attention_mask'])
 
-    # Convert lists into tensors
-    input_ids = torch.cat(input_ids, dim=0)
-    attention_masks = torch.cat(attention_masks, dim=0)
-    labels = torch.tensor(data["genre_id"].values)
+#     # Convert lists into tensors
+#     input_ids = torch.cat(input_ids, dim=0)
+#     attention_masks = torch.cat(attention_masks, dim=0)
+#     labels = torch.tensor(data["genre_id"].values)
     
-    # Create TensorDataset
-    dataset = TensorDataset(input_ids, attention_masks, labels)
+#     # Create TensorDataset
+#     dataset = TensorDataset(input_ids, attention_masks, labels)
     
-    return dataset, unique_genres, num_labels
+#     return dataset, unique_genres, num_labels
 
 
 
