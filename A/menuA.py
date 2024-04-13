@@ -2,7 +2,7 @@ import sys
 import os
 import torch
 from A.data_preprocessing_A import eda_books, load_datasets_from_files, preprocess_data, proportional_sampling_min, split_dataset, create_data_loaders
-from A.model import plot_training_curves, predict_with_multinomialNB, train_model, load_model_and_predict
+from A.modelA import plot_training_curves, predict_with_multinomialNB, train_model, load_model_and_predict
 
 
 def print_menu_A():
@@ -12,13 +12,13 @@ def print_menu_A():
     print("-------------Baseline-------------")
     print("2. Naive Bayes classifier")
     print("--------------RoBERTa-------------")
-    print("4. RoBERTa (pre-trained)")
+    print("4. RoBERTa (pre-trained) - deprecated")
     print("5. RoBERTa (pre-trained) sampled")
-    print("6. RoBERTa (train on your machine)")
+    print("6. RoBERTa (train on your machine) - deprecated")
     print("7. RoBERTa (train on your machine) sampled")
     print("--------------ALBERT-------------")
-    print("8. ALBERT (pre-trained)")
-    print("9. ALBERT (train on your machine)")
+    print("8. ALBERT (pre-trained) sampled")
+    print("9. ALBERT (train on your machine) sampled")
     print("10. Exit program")
     print("##################################")
 
@@ -43,7 +43,6 @@ def run_task_A():
     
             eda_books(books_file_path, plt_title1 = 'Genre Distribution (Full Sample)', plt_title2='Summary Length Distribution (Full Sample)', plt_title3 = 'Average Summary Length per Genre (Full Sample)')
 
- 
             print('EDA where each class is capped at 400 samples (modified)')
             reduced_books_file_path_400m = r"./Datasets/books/reduced_books_400m.csv"
             reduced_books_file_path_400m, reduced_data = proportional_sampling_min(books_file_path, reduced_books_file_path_400m, target_samples=400, minimum_samples=200)
@@ -231,6 +230,6 @@ def run_task_A():
             sys.exit()
 
         else:
-            print("Invalid option. Please enter 1, 2, 3, 4, 5, 6 or 7")
+            print("Invalid option. Please enter 1, 2, 3, 4, 5, 6, 7, 8, 9 or 10")
 
 
