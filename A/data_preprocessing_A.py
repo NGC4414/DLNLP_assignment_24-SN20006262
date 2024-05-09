@@ -312,9 +312,9 @@ def load_datasets_from_files(train_dataset_path, val_dataset_path, test_dataset_
 
 def create_data_loaders(train_dataset, val_dataset, test_dataset, batch_size=16):
     
-    train_dataloader = DataLoader(train_dataset, sampler=RandomSampler(train_dataset), batch_size=batch_size)
-    valid_dataloader = DataLoader(val_dataset, sampler=SequentialSampler(val_dataset), batch_size=batch_size)
-    test_dataloader = DataLoader(test_dataset, sampler=SequentialSampler(test_dataset), batch_size=batch_size)
+    train_dataloader = DataLoader(train_dataset, sampler=RandomSampler(train_dataset), batch_size=batch_size, num_workers=4, pin_memory=True)
+    valid_dataloader = DataLoader(val_dataset, sampler=SequentialSampler(val_dataset), batch_size=batch_size, num_workers=4, pin_memory=True)
+    test_dataloader = DataLoader(test_dataset, sampler=SequentialSampler(test_dataset), batch_size=batch_size, num_workers=4, pin_memory=True)
     
     return train_dataloader, valid_dataloader, test_dataloader
 
