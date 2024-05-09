@@ -64,7 +64,7 @@ def run_task_B():
             
             print("----------Exploratory data analysis----------")
             print("---------------Sampled Dataset---------------")   
-            eda_lyrics(processed_lyrics_path='./Datasets/lyrics/reduced_lyrics.csv', plt_title1='Genre Distribution', plt_title2= 'Length of Lyrics', plt_title3='Average Length of Lyrics per Genre')
+            eda_lyrics(processed_lyrics_path='./Datasets/lyrics/reduced_lyrics.csv', plt_title1='Genre Distribution (sampled)', plt_title2= 'Length of Lyrics (sampled)', plt_title3='Average Length of Lyrics per Genre (sampled)')
         
         elif option == 2:
             print("Executing Naive Bayes classifier")
@@ -167,13 +167,12 @@ def run_task_B():
             val_dataset_path= './Datasets/lyrics/Roberta/val_dataset.pt'
             test_dataset_path = './Datasets/lyrics/Roberta/test_dataset.pt'
             print('Transfer learning roberta on song lyrics...')
-            
             # cleaned_data, cleaned_music_path = prepare_and_clean_dataset(train_path=train_path, 
             #                                                              test_path=test_path,  
             #                                                              cleaned_music_path=cleaned_music_path)
             print('...Cleaned dataset')
-
-            reduced_lyrics_path=proportional_sampling(cleaned_music_path=cleaned_music_path, genre_col='Genre', min_samples_per_genre=200, target_samples=1000, reduced_lyrics_path =reduced_lyrics_path)
+            reduced_lyrics_path=proportional_sampling(cleaned_music_path=cleaned_music_path, genre_col='Genre', min_samples_per_genre=200, target_samples=1000, 
+                                                      reduced_lyrics_path =reduced_lyrics_path)
             print('...Sampled song lyrics data')
 
             dataset, unique_genres, num_labels = preprocess_lyrics_data(path='./Datasets/lyrics/reduced_lyrics.csv', tokenizer_name="roberta-base", max_length=512)
@@ -187,7 +186,8 @@ def run_task_B():
             print('...Creating dataloaders')
 
             print("Training RoBERTa model.")
-            training_stats = train_model_tf(train_dataloader, valid_dataloader, num_labels, model_name="roberta-base", pre_trained_model_path= 'A/models/roberta_sm.bin', model_path= 'B/models/tf_roberta.bin', epochs=3, learning_rate=2e-5, epsilon=1e-8)
+            training_stats = train_model_tf(train_dataloader, valid_dataloader, num_labels, model_name="roberta-base", pre_trained_model_path= 'A/models/roberta_sm.bin', 
+                                            model_path= 'B/models/tf_roberta.bin', epochs=3, learning_rate=2e-5, epsilon=1e-8)
             
             plot_training_curves(training_stats)
             print("Loading pre-trained model and making predictions on validation set:")

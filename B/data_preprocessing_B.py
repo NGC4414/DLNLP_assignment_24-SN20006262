@@ -13,8 +13,6 @@ from sklearn.model_selection import train_test_split
 import warnings
 from B import utils
 
-
-
 # nltk.download('punkt')
 # nltk.download('stopwords')
 
@@ -83,27 +81,6 @@ def eda_lyrics(processed_lyrics_path='',  plt_title1='Genre Distribution', plt_t
     # Display the plots
     plt.show()
 
-
-def prepare_and_clean_dataset(train_path='./Datasets/lyrics/train.csv', test_path='./Datasets/lyrics/test.csv',  cleaned_music_path='./Datasets/lyrics/clean_data.csv'):
-
-    # Load and concatenate datasets
-    train_data = pd.read_csv(train_path)
-    test_data = pd.read_csv(test_path)
-    cleaned_data = pd.concat([train_data, test_data], axis=0)
-    cleaned_data = cleaned_data.drop_duplicates().reset_index(drop=True)
-
-    # Proceed with the cleaning steps
-    cleaned_data = cleaned_data[cleaned_data['Language'] == 'en']
-    cleaned_data = cleaned_data[(cleaned_data['Genre'] == 'Hip-Hop') | (cleaned_data['Genre'] == 'Pop') | (cleaned_data['Genre'] == 'Country') | (cleaned_data['Genre'] == 'Rock') | (cleaned_data['Genre'] == 'Electronic')]
-    
-    cleaned_data['Lyrics'] = cleaned_data['Lyrics'].astype(str)
-    cleaned_data['Lyrics'] = utils.clean_data(cleaned_data['Lyrics'])
-    cleaned_data = cleaned_data.drop(cleaned_data[cleaned_data['Lyrics'].str.len() == 0].index)
-    
-    # save the cleaned and sampled dataset to a new file
-    cleaned_data.to_csv(cleaned_music_path, index=False)
-
-    return cleaned_data, cleaned_music_path
 
 
 def proportional_sampling2(train_path = '', test_path='', genre_col='Genre', min_samples_per_genre=200, reduced_lyrics_path=''):
@@ -216,40 +193,39 @@ def proportional_sampling4(train_path='', test_path='', genre_col='Genre',
     return reduced_lyrics_path, sampled_data
 
 
-def proportional_sampling(cleaned_music_path='', genre_col='Genre', 
-                          min_samples_per_genre=300, target_samples=1000,
-                          reduced_lyrics_path=''):
+# def proportional_sampling(cleaned_music_path='', genre_col='Genre', 
+#                           min_samples_per_genre=300, target_samples=1000,
+#                           reduced_lyrics_path=''):
 
-    # Load and concatenate datasets
-    data = pd.read_csv(cleaned_music_path)
+#     # Load and concatenate datasets
+#     data = pd.read_csv(cleaned_music_path)
 
-    # Calculate sampling ratios while ensuring the max_samples_per_genre constraint is respected
-    genre_counts = data[genre_col].value_counts()
-    #max_samples = min(genre_counts.max(), target_samples)          # Adjust max_samples to not exceed max_samples_per_genre
-    max_samples = genre_counts[genre_counts > min_samples_per_genre].max()
-    sampled_data = pd.DataFrame()
+#     # Calculate sampling ratios while ensuring the max_samples_per_genre constraint is respected
+#     genre_counts = data[genre_col].value_counts()
+#     #max_samples = min(genre_counts.max(), target_samples)          # Adjust max_samples to not exceed max_samples_per_genre
+#     max_samples = genre_counts[genre_counts > min_samples_per_genre].max()
+#     sampled_data = pd.DataFrame()
 
-    for genre, count in genre_counts.items():
-        genre_data = data[data[genre_col] == genre]
+#     for genre, count in genre_counts.items():
+#         genre_data = data[data[genre_col] == genre]
         
-        if count > min_samples_per_genre:
-            reduction_factor = min(target_samples / max_samples, 1)
-            target_count = int(count*reduction_factor)
-            reduced_samples = genre_data.sample(n=target_count, random_state=42)
-            #target_count = max(min_samples_per_genre, min(target_count, target_samples))  # Ensure target_count is within specified bounds
-        else:
-            #target_count = count  # Keep all samples if below min_samples_per_genre
-            reduced_samples = data[data[genre_col] == genre]
+#         if count > min_samples_per_genre:
+#             reduction_factor = min(target_samples / max_samples, 1)
+#             target_count = int(count*reduction_factor)
+#             reduced_samples = genre_data.sample(n=target_count, random_state=42)
+#             #target_count = max(min_samples_per_genre, min(target_count, target_samples))  # Ensure target_count is within specified bounds
+#         else:
+#             #target_count = count  # Keep all samples if below min_samples_per_genre
+#             reduced_samples = data[data[genre_col] == genre]
             
-        sampled_data = pd.concat([sampled_data, reduced_samples])
+#         sampled_data = pd.concat([sampled_data, reduced_samples])
 
-        # sampled_genre_data = genre_data.sample(n=target_count, random_state=1)
-        # sampled_data = pd.concat([sampled_data, sampled_genre_data], ignore_index=True)
+#         # sampled_genre_data = genre_data.sample(n=target_count, random_state=1)
+#         # sampled_data = pd.concat([sampled_data, sampled_genre_data], ignore_index=True)
 
-    # Save the sampled dataset
-    sampled_data.to_csv(reduced_lyrics_path, index=False)
-    
-    return sampled_data, reduced_lyrics_path
+#     # Save the sampled dataset
+#     sampled_data.to_csv(reduced_lyrics_path, index=False)
+#     return sampled_data, reduced_lyrics_path
 
 def proportional_sampling(cleaned_music_path='', genre_col='Genre', 
                           min_samples_per_genre=300, target_samples=1000,
@@ -289,8 +265,27 @@ def proportional_sampling(cleaned_music_path='', genre_col='Genre',
     return sampled_data, reduced_lyrics_path
 
 
-# Proportionally sample the dataset before cleaning
-#sampled_data = proportional_sampling(train_path = '', test_path='', genre_col='Genre', min_samples_per_genre=200, reduced_lyrics_path= '')
+# def prepare_and_clean_dataset(train_path='./Datasets/lyrics/train.csv', test_path='./Datasets/lyrics/test.csv', cleaned_music_path='./Datasets/lyrics/clean_data.csv'):
+
+#     # Load and concatenate datasets
+#     train_data = pd.read_csv(train_path)
+#     test_data = pd.read_csv(test_path)
+#     cleaned_data = pd.concat([train_data, test_data], axis=0)
+#     cleaned_data = cleaned_data.drop_duplicates().reset_index(drop=True)
+
+#     # Proceed with the cleaning steps
+#     cleaned_data = cleaned_data[cleaned_data['Language'] == 'en']
+#     cleaned_data = cleaned_data[(cleaned_data['Genre'] == 'Hip-Hop') | (cleaned_data['Genre'] == 'Pop') | (cleaned_data['Genre'] == 'Country') | (cleaned_data['Genre'] == 'Rock') | (cleaned_data['Genre'] == 'Electronic')]
+    
+#     cleaned_data['Lyrics'] = cleaned_data['Lyrics'].astype(str)
+#     cleaned_data['Lyrics'] = utils.clean_data(cleaned_data['Lyrics'])
+#     cleaned_data = cleaned_data.drop(cleaned_data[cleaned_data['Lyrics'].str.len() == 0].index)
+    
+#     # save the cleaned and sampled dataset to a new file
+#     cleaned_data.to_csv(cleaned_music_path, index=False)
+
+#     return cleaned_data, cleaned_music_path
+
 
 def prepare_and_clean_dataset(train_path='./Datasets/lyrics/train.csv', test_path='./Datasets/lyrics/test.csv',  cleaned_music_path='./Datasets/lyrics/clean_data.csv'):
 
@@ -313,6 +308,8 @@ def prepare_and_clean_dataset(train_path='./Datasets/lyrics/train.csv', test_pat
     
     return cleaned_data, cleaned_music_path
 
+
+
 def prepare_and_clean_dataset2(reduced_lyrics_path,  cleaned_music_path='./Datasets/lyrics/clean_data.csv'):
     # retrieving the reduced data file
     reduced_data = pd.read_csv(reduced_lyrics_path)
@@ -329,6 +326,7 @@ def prepare_and_clean_dataset2(reduced_lyrics_path,  cleaned_music_path='./Datas
     reduced_data.to_csv(cleaned_music_path, index=False)
     
     return reduced_data, cleaned_music_path
+
 
 
 def preprocess_lyrics_data(path='' , tokenizer_name="roberta-base", max_length=512):
@@ -361,6 +359,7 @@ def preprocess_lyrics_data(path='' , tokenizer_name="roberta-base", max_length=5
     dataset = TensorDataset(input_ids, attention_masks, labels)
 
     return dataset, unique_genres, num_labels
+
 
 
 def split_dataset(dataset, train_frac=0.8, test_frac=0.1, val_frac=0.1, seed=42, train_dataset_path= '', val_dataset_path = '', test_dataset_path = '' ):
