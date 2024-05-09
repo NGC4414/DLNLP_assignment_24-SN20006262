@@ -4,10 +4,19 @@ The project folder is organised as follows:
 
 -`DLNLP_assignment`
   - `Folder A` : contains the code to execute task A and the pretrained models folder `models`.
+
   - `Folder B` : contains the code to execute task B and the pretrained models folder `models`.
-  - `Datasets`: Contains the two datasets used to run Task A (books) and Task B(lyrics). The dataset for Task A is retrievable from https://huggingface.co/datasets/azlan8289/Book_Genre. For ease of use, the books folder contains the initial dataset, the reduced dataset (to avoid sampling it again when running the code), and the Albert and Roberta folders, which contain the .pt files for models training. The lyrics dataset can be retrieved from https://www.kaggle.com/datasets/mateibejan/multilingual-lyrics-for-genre-classification/data. The folder contains the original datasets test.cv and train.cv, as well as the cleaned and reduced versions clean_lyrics.cv and reduced_lyrics.cv, to minimise pre-processing power. The lyrics folder also contains the Roberta and Albert folders with the .pt files for model training.
+
+  - `Datasets`: Contains the two datasets used to run Task A (books) and Task B (lyrics). 
+
+      - `books`: The dataset for Task A is retrievable from https://huggingface.co/datasets/azlan8289/Book_Genre. For ease of use, the books folder contains the initial dataset, the reduced dataset (to avoid sampling it again when running the code), and the Albert and Roberta folders, which contain the .pt files for models training.  Due to file size limits, the .pt files train_dataset_full.pt, val_dataset_full.pt and test_dataset_full.pt for execution of the Roberta model on the full-size dataset were not uploaded on GitHub. However it is possible to access them here https://1drv.ms/f/s!AioVNsbXOZtYfIlUywvciIJfDGE?e=tyEPHQ . Once downloaded, please put these files in the directory: \DLNLP_assignment\Datasets\books\Roberta.
+
+    - `lyrics`: The lyrics dataset can be retrieved from https://www.kaggle.com/datasets/mateibejan/multilingual-lyrics-for-genre-classification/data. The folder does not have the initial train.csv and test.csv files as they were over the GitHub file size limit, but if needed they can be accessed and downloaded from the Kaggle link provided here and on the report. The folder on GitHub contains the cleaned and reduced versions clean_lyrics.cv and reduced_lyrics.cv of the dataset to minimise pre-processing power when running the code. The lyrics folder also contains the Roberta and Albert folders with the .pt files for model training.
+
   - `main.py`: file that handles the execution of the project.
+
   - `README.md`: this file.
+
   - `environment.yml` : file that contains all the libraries used and their versions. This is a .yml file because the project was run using a conda virtual environment.
 
 
@@ -17,7 +26,8 @@ The project folder is organised as follows:
 - `data_preprocessing_A.py`: file used to run the menu for task A
 - `menuA.py`: file that contains all the functions that execute task A
 - `modelA.py`: file used in order to accept relative paths
-- `models`: pretrained model `roberta_f.bin`, `roberta_sm.bin`, `albert.bin`.
+- `models`: should contain the pretrained models `roberta_f.bin`, `roberta_sm.bin`, `albert.bin`, however these were over the file limit therefore follow the instructions in the readmeA.md on how to access and download these files.
+    - `readmeA.md`: contains instructions on how to download the pretrained models
 
 ## Menu
 
@@ -46,7 +56,8 @@ The project folder is organised as follows:
 - `utils.py`: contains functions used in the `data_preprocessing_B.py` module.
 - `menuB.py`: file that contains all the functions that execute task B.
 - `modelB.py`: file used in order to accept relative paths.
-- `models`: pretrained model `albert_lyrics.bin`, `roberta_lyrics.bin`, `tf_albert.bin`, `tf_roberta.bin`.
+- `models`: should contain the pretrained models  `albert_lyrics.bin`, `roberta_lyrics.bin`, `tf_albert.bin`, `tf_roberta.bin`, however these were over the file limit therefore follow the instructions in the readmeB.md on how to access and download these files.
+    - `readmeB.md`: contains instructions on how to download the pretrained models
 
 ## Menu
 
