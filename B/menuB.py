@@ -97,8 +97,8 @@ def run_task_B():
 
         elif option == 4:
             print('Training roberta on song lyrics...')
-            train_path ='./Datasets/lyrics/train.csv'
-            test_path='./Datasets/lyrics/test.csv'
+            # train_path ='./Datasets/lyrics/train.csv'
+            # test_path='./Datasets/lyrics/test.csv'
             cleaned_music_path = './Datasets/lyrics/clean_lyrics.csv'
             reduced_lyrics_path = './Datasets/lyrics/reduced_lyrics.csv'
             train_dataset_path=  './Datasets/lyrics/Roberta/train_dataset.pt'
@@ -159,8 +159,8 @@ def run_task_B():
             
 
         elif option == 6:
-            train_path= './Datasets/lyrics/train.csv' 
-            test_path = './Datasets/lyrics/test.csv'
+            # train_path= './Datasets/lyrics/train.csv' 
+            # test_path = './Datasets/lyrics/test.csv'
             cleaned_music_path = './Datasets/lyrics/clean_lyrics.csv'
             reduced_lyrics_path = './Datasets/lyrics/reduced_lyrics.csv'
             train_dataset_path=  './Datasets/lyrics/Roberta/train_dataset.pt'
@@ -223,8 +223,8 @@ def run_task_B():
 
         elif option == 8:
             print('Training Albert on song lyrics...')
-            train_path ='./Datasets/lyrics/train.csv'
-            test_path='./Datasets/lyrics/test.csv'
+            # train_path ='./Datasets/lyrics/train.csv'
+            # test_path='./Datasets/lyrics/test.csv'
             cleaned_music_path = './Datasets/lyrics/clean_lyrics.csv'
             reduced_lyrics_path = './Datasets/lyrics/reduced_lyrics.csv'
             train_dataset_path=  './Datasets/lyrics/Albert/train_dataset.pt'
@@ -287,8 +287,8 @@ def run_task_B():
         
 
         elif option == 10:
-            train_path= './Datasets/lyrics/train.csv' 
-            test_path = './Datasets/lyrics/test.csv'
+            # train_path= './Datasets/lyrics/train.csv' 
+            # test_path = './Datasets/lyrics/test.csv'
             cleaned_music_path = './Datasets/lyrics/clean_lyrics.csv'
             reduced_lyrics_path = './Datasets/lyrics/reduced_lyrics.csv'
             train_dataset_path=  './Datasets/lyrics/Albert/train_dataset.pt'
@@ -299,7 +299,7 @@ def run_task_B():
             #                                                              test_path=test_path,  
             #                                                              cleaned_music_path=cleaned_music_path)
             # print('...Cleaned dataset')
-
+            print('Transfer learning ALBERT on song lyrics...')
             reduced_lyrics_path=proportional_sampling(cleaned_music_path=cleaned_music_path, genre_col='Genre', min_samples_per_genre=200, target_samples=1000, reduced_lyrics_path =reduced_lyrics_path)
             print('...Sampled song lyrics data')
 
