@@ -3,11 +3,11 @@ This folder conatins the code for the 2023-2024 DLNLP assignment.
 The project folder is organised as follows:
 
 -`DLNLP_assignment`
-  - `Folder A` : contains the code to execute task A and the pretrained models folder `models`.
+  - `Folder A` : contains the code to execute task A and instructions on how to download the pretrained models folder `models`.
 
-  - `Folder B` : contains the code to execute task B and the pretrained models folder `models`.
+  - `Folder B` : contains the code to execute task B and instructions on how to download the pretrained models folder `models`.
 
-  - `Datasets`: Contains the two datasets used to run Task A (books) and Task B (lyrics). 
+  - `Datasets`: contains the two datasets used to run Task A (books) and Task B (lyrics). 
 
       - `books`: The dataset for Task A is retrievable from https://huggingface.co/datasets/azlan8289/Book_Genre. For ease of use, the books folder contains the initial dataset, the reduced dataset (to avoid sampling it again when running the code), and the Albert and Roberta folders, which contain the .pt files for models training.  Due to file size limits, the .pt files train_dataset_full.pt, val_dataset_full.pt and test_dataset_full.pt for execution of the Roberta model on the full-size dataset were not uploaded on GitHub. However it is possible to access them here https://1drv.ms/f/s!AioVNsbXOZtYfIlUywvciIJfDGE?e=tyEPHQ . Once downloaded, please put these files in the directory: \DLNLP_assignment\Datasets\books\Roberta.
 
