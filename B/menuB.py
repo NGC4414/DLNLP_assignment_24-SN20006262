@@ -11,7 +11,7 @@ def print_menu_B():
     print("----------------EDA---------------")
     print('1. EDA - Exploratory Data Analysis')  
     print("-------------Baseline-------------")
-    print("2. Naive Bayes classifier")
+    print("2. Multinomial Naive Bayes classifier")
     print("--------------RoBERTa-------------")
     print("3. RoBERTa (pre-trained) ")
     print("4. RoBERTa (train on your machine) ")
