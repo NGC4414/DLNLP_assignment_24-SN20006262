@@ -3,9 +3,9 @@ This folder conatins the code for the 2023-2024 DLNLP assignment.
 The project folder is organised as follows:
 
 -`DLNLP_assignment`
-  - `Folder A` : contains the code to execute task A and instructions on how to download the pretrained models folder `models`.
+  - `Folder A` : contains the code to execute task A and instructions on how to download the pretrained models in folder `models`.
 
-  - `Folder B` : contains the code to execute task B and instructions on how to download the pretrained models folder `models`.
+  - `Folder B` : contains the code to execute task B and instructions on how to download the pretrained models in folder `models`.
 
   - `Datasets`: contains the two datasets used to run Task A (books) and Task B (lyrics). 
 
