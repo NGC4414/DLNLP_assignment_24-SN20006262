@@ -17,25 +17,25 @@ The project folder is organised as follows:
 
   - `README.md`: this file.
 
-  - `environment.yml` : file that contains all the libraries used and their versions. This is a .yml file because the project was run using a conda virtual environment.
+  - `environment.yml` : file that contains all libraries used and their versions. This is a .yml file because the project was run using a conda virtual environment.
 
 
 # Folder A: Book-genre classification task
 
 ## Folder files
-- `data_preprocessing_A.py`: file used to run the menu for task A
-- `menuA.py`: file that contains all the functions that execute task A
-- `modelA.py`: file used in order to accept relative paths
-- `models`: should contain the pretrained models `roberta_f.bin`, `roberta_sm.bin`, `albert.bin`, however these were over the file limit therefore follow the instructions in the readmeA.md on how to access and download these files.
+- `data_preprocessing_A.py`: file containing various pre-processing functions
+- `menuA.py`: file used to run the menu for task A
+- `modelA.py`: file used for model training functions
+- `models`: this folder should contain the pretrained models `roberta_f.bin`, `roberta_sm.bin`, `albert.bin`, however these were over the file limit therefore follow the instructions in the readmeA.md on how to access and download these files.
     - `readmeA.md`: contains instructions on how to download the pretrained models
 
-## Menu
+## TAsk A Menu
 
     ##################################
     ----------------EDA---------------
     1. EDA - Exploratory Data Analysis
     -------------Baseline-------------
-    2. Naive Bayes classifier
+    2. Multinomial Naive Bayes classifier
     --------------RoBERTa-------------
     4. RoBERTa (pre-trained) - full dataset
     5. RoBERTa (pre-trained) - sampled dataset
@@ -52,11 +52,11 @@ The project folder is organised as follows:
 # Folder B: Music genre-classification task 
 
 ## Folder files
-- `data_preprocessing_B.py`: file used to run the menu for task B.
+- `data_preprocessing_B.py`: file containing various pre-processing functions
 - `utils.py`: contains functions used in the `data_preprocessing_B.py` module.
-- `menuB.py`: file that contains all the functions that execute task B.
-- `modelB.py`: file used in order to accept relative paths.
-- `models`: should contain the pretrained models  `albert_lyrics.bin`, `roberta_lyrics.bin`, `tf_albert.bin`, `tf_roberta.bin`, however these were over the file limit therefore follow the instructions in the readmeB.md on how to access and download these files.
+- `menuB.py`: file used to run the menu for task B.
+- `modelB.py`: file containing model training functions
+- `models`: this folder should contain the pretrained models  `albert_lyrics.bin`, `roberta_lyrics.bin`, `tf_albert.bin`, `tf_roberta.bin`, however these were over the file limit therefore follow the instructions in the readmeB.md on how to access and download these files.
     - `readmeB.md`: contains instructions on how to download the pretrained models
 
 ## Menu
@@ -65,7 +65,7 @@ The project folder is organised as follows:
     ----------------EDA---------------
     1. EDA - Exploratory Data Analysis
     -------------Baseline-------------
-    2. Naive Bayes classifier
+    2. Multinomial Naive Bayes classifier
     --------------RoBERTa-------------
     3. RoBERTa (pre-trained)
     4. RoBERTa (train on your machine)
@@ -83,6 +83,6 @@ The project folder is organised as follows:
 
 
 # How to Run
-1. Ensure all the required packages are installed.
+1. Ensure all the required packages are installed by running the following command on the terminal: conda env create -f environment.yml
 2. To run task A write the `python main.py A` command in the terminal. To run task B write the command `python main.py B` in the terminal. The arguments `A` for `python main.py A` and `B` for `python main.py B` must be uppercase to make the program work.
 4. Once the preferred task has been selected, follow the on-screen prompts to train new models or use pre-trained models for both tasks.
