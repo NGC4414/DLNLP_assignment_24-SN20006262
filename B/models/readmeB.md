@@ -2,4 +2,4 @@ This folder should contain the pretrained models for Task B: Song Genre Classifi
 the models can be accessed and downloaded here: https://1drv.ms/f/s!AioVNsbXOZtYdnv2uPkrXATCwj8?e=wXOAPW 
 
 Once you have downloaded the pretrained models, please move them to this folder to try them. 
-It is essential to at least have trained RoBERTa and ALBERT on song lyrics or have downloaded the pre-trained models `roberta__lyrics.bin`, `albert_lyrics.bin`, `tf_roberta.bin`, `tf_albert.bin` before running the code for transfer-learned models.
+It is essential to at least have trained RoBERTa and ALBERT on book genres or have downloaded the pre-trained models `roberta__lyrics.bin`, `albert_lyrics.bin`, `tf_roberta.bin`, `tf_albert.bin` before running the code for transfer-learned models.
